@@ -1,0 +1,65 @@
+from vex import *
+
+brain = Brain()
+controller = Controller(PRIMARY)
+
+# Drivetrain motors: front-left, back-left, front-right, back-right.
+fl = Motor(Ports.PORT1, False)
+bl = Motor(Ports.PORT11, False)
+fr = Motor(Ports.PORT10, True)
+br = Motor(Ports.PORT20, True)
+
+# Port 12 is one physical motor, so D-pad control takes priority over R1/L1.
+aux12 = Motor(Ports.PORT12, False)
+aux15 = Motor(Ports.PORT15, False)
+motor13 = Motor(Ports.PORT13, False)
+motor14 = Motor(Ports.PORT14, False)
+
+
+def expo(value):
+	value = value / 100.0
+	return (value ** 3) * 100.0
+
+
+def run_motor(motor, velocity):
+	if abs(velocity) < 1:
+		motor.stop(BRAKE)
+	else:
+		direction = FORWARD if velocity > 0 else REVERSE
+		motor.spin(direction, abs(velocity), PERCENT)
+
+
+def button_pair(positive, negative):
+	return (100 if positive else 0) - (100 if negative else 0)
+
+
+while True:
+	# Split arcade: left stick Y for forward/reverse, right stick X for turning.
+	forward = expo(controller.axis3.position())
+	turn = expo(controller.axis1.position())
+	left = max(-100, min(100, forward + turn))
+	right = max(-100, min(100, forward - turn))
+	run_motor(fl, left)
+	run_motor(bl, left)
+	run_motor(fr, right)
+	run_motor(br, right)
+
+	# D-pad drives ports 12 and 15 oppositely; otherwise R1/L1 drives port 12.
+	if controller.buttonUp.pressing():
+		run_motor(aux12, 100)
+		run_motor(aux15, -100)
+	elif controller.buttonDown.pressing():
+		run_motor(aux12, -100)
+		run_motor(aux15, 100)
+	else:
+		run_motor(aux12, button_pair(controller.buttonR1.pressing(),
+									 controller.buttonL1.pressing()))
+		run_motor(aux15, 0)
+
+	# Y/X set port 13 direction; R2/L2 set port 14 direction.
+	run_motor(motor13, button_pair(controller.buttonY.pressing(),
+								   controller.buttonX.pressing()))
+	run_motor(motor14, button_pair(controller.buttonR2.pressing(),
+								   controller.buttonL2.pressing()))
+
+	wait(20, MSEC)
