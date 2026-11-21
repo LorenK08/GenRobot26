@@ -30,8 +30,8 @@ def run_motor(motor, speed):
 
 
 # quick pairing controls
-def button_pair(positive, negative):
-    return (100 if positive else 0) - (100 if negative else 0)
+def button_pair(positive, negative, guh):
+    return (guh if positive else 0) - (guh if negative else 0)
 
 
 while True:
@@ -62,8 +62,8 @@ while True:
             run_motor(lift12, 0)
 
         # 4bar controls
-        run_motor(fourbar,button_pair(controller.buttonR2.pressing(),controller.buttonR1.pressing()))
+        run_motor(fourbar, button_pair(controller.buttonR2.pressing(), controller.buttonR1.pressing(), 75))
         # claw controls
-        run_motor(claw, button_pair(controller.buttonL1.pressing(),controller.buttonL2.pressing()))
+        run_motor(claw, button_pair(controller.buttonL1.pressing(),controller.buttonL2.pressing(), 100))
 
         wait(20, MSEC)
