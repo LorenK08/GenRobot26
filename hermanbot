@@ -11,9 +11,9 @@ br = Motor(Ports.PORT20, True)
 
 # Port 12 is one physical motor, so D-pad control takes priority over R1/L1.
 aux12 = Motor(Ports.PORT12, False)
-aux15 = Motor(Ports.PORT15, False)
-motor13 = Motor(Ports.PORT13, False)
-motor14 = Motor(Ports.PORT14, False)
+aux15 = Motor(Ports.PORT18, False)
+fourbar = Motor(Ports.PORT15, False)
+claw = Motor(Ports.PORT14, False)
 
 
 def expo(value):
@@ -57,9 +57,9 @@ while True:
 		run_motor(aux15, 0)
 
 	# Y/X set port 13 direction; R2/L2 set port 14 direction.
-	run_motor(motor13, button_pair(controller.buttonY.pressing(),
+	run_motor(fourbar, button_pair(controller.buttonY.pressing(),
 								   controller.buttonX.pressing()))
-	run_motor(motor14, button_pair(controller.buttonR2.pressing(),
+	run_motor(claw, button_pair(controller.buttonR2.pressing(),
 								   controller.buttonL2.pressing()))
 
 	wait(20, MSEC)
