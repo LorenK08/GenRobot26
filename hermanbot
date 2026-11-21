@@ -38,7 +38,7 @@ while True:
 
         # split arcade
         forward = expo(controller.axis3.position())
-        turn = expo(controller.axis1.position())
+        turn = 0.75 * expo(controller.axis1.position())
 
         left = max(-100, min(100, forward + turn))
         right = max(-100, min(100, forward - turn))
@@ -64,6 +64,6 @@ while True:
         # 4bar controls
         run_motor(fourbar, button_pair(controller.buttonR2.pressing(), controller.buttonR1.pressing(), 75))
         # claw controls
-        run_motor(claw, button_pair(controller.buttonL1.pressing(),controller.buttonL2.pressing(), 100))
+        run_motor(claw, button_pair(controller.buttonL1.pressing(), controller.buttonL2.pressing(), 100))
 
         wait(20, MSEC)
