@@ -11,7 +11,7 @@ br = Motor(Ports.PORT20, True)
 
 # Port 12 is one physical motor, so D-pad control takes priority over R1/L1.
 aux12 = Motor(Ports.PORT12, False)
-aux15 = Motor(Ports.PORT18, False)
+aux18 = Motor(Ports.PORT18, False)
 fourbar = Motor(Ports.PORT15, False)
 claw = Motor(Ports.PORT14, False)
 
@@ -47,19 +47,17 @@ while True:
 	# D-pad drives ports 12 and 15 oppositely; otherwise R1/L1 drives port 12.
 	if controller.buttonUp.pressing():
 		run_motor(aux12, 100)
-		run_motor(aux15, -100)
+		run_motor(aux18, -100)
 	elif controller.buttonDown.pressing():
 		run_motor(aux12, -100)
-		run_motor(aux15, 100)
+		run_motor(aux18, 100)
 	else:
-		run_motor(aux12, button_pair(controller.buttonR1.pressing(),
-									 controller.buttonL1.pressing()))
-		run_motor(aux15, 0)
+		run_motor(aux18, 0)
 
 	# Y/X set port 13 direction; R2/L2 set port 14 direction.
-	run_motor(fourbar, button_pair(controller.buttonY.pressing(),
-								   controller.buttonX.pressing()))
-	run_motor(claw, button_pair(controller.buttonR2.pressing(),
+	run_motor(fourbar, button_pair(controller.buttonR1.pressing(),
+								   controller.buttonR2.pressing()))
+	run_motor(claw, button_pair(controller.buttonL2.pressing(),
 								   controller.buttonL2.pressing()))
 
 	wait(20, MSEC)

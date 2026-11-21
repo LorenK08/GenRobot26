@@ -1,0 +1,81 @@
+from vex import *
+
+brain = Brain()
+controller = Controller(PRIMARY)
+competition = Competition()
+
+# drivetrain motors
+fl = Motor(Ports.PORT1, False)
+bl = Motor(Ports.PORT11, False)
+fr = Motor(Ports.PORT10, True)
+br = Motor(Ports.PORT20, True)
+
+lift12 = Motor(Ports.PORT12, False)
+lift18 = Motor(Ports.PORT18, False)
+fourbar = Motor(Ports.PORT15, False)
+claw = Motor(Ports.PORT14, False)
+
+# expo scale the drivetrain
+def expo(value):
+    value = value / 100.0
+    return (value ** 3) * 100.0
+
+# deadband
+def run_motor(motor, speed):
+    if abs(speed) < 1:
+        motor.stop(BRAKE)
+    else:
+        motor.spin(direction, speed, PERCENT)
+
+# quick pairing controls
+def button_pair(positive, negative):
+    return (100 if positive else 0) - (100 if negative else 0)
+
+
+def pre_autonomous():
+    brain.screen.clear_screen()
+    brain.screen.set_cursor(1, 1)
+    brain.screen.print("75575A")
+
+def autonomous():
+    pass
+
+def user_control():
+    while True:
+
+        # split arcade
+        forward = expo(controller.axis3.position())
+        turn = expo(controller.axis1.position())
+
+        left = max(-100, min(100, forward + turn))
+        right = max(-100, min(100, forward - turn))
+
+        run_motor(fl, left)
+        run_motor(bl, left)
+        run_motor(fr, right)
+        run_motor(br, right)
+
+        # dpad controls lift
+        if controller.buttonUp.pressing():
+            run_motor(lift12, 100)
+            run_motor(lift18, -100)
+
+        elif controller.buttonDown.pressing():
+            run_motor(lift12, -100)
+            run_motor(lift18, 100)
+
+        else:
+            run_motor(lift18, 0)
+            run_motor(lift12, 0)
+
+        # 4bar controls
+        run_motor(fourbar,button_pair(controller.buttonR2.pressing(),controller.buttonR1.pressing()))
+        # claw controls
+        run_motor(claw, button_pair(controller.buttonL1.pressing(),controller.buttonL2.pressing()))
+
+        wait(20, MSEC)
+
+competition.autonomous(autonomous)
+competition.drivercontrol(user_control)
+
+pre_autonomous()
